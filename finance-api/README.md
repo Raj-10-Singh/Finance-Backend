@@ -1,6 +1,6 @@
 # finance-api
 
-Backend for a role-based finance dashboard. Built with Node.js, Express and MongoDB.
+Backend for a role based finance dashboard. Built with Node.js, Express and MongoDB.
 
 ---
 
@@ -19,8 +19,7 @@ Backend for a role-based finance dashboard. Built with Node.js, Express and Mong
 git clone <your-repo-url>
 cd finance-api
 npm install
-cp .env.example .env
-# fill in MONGO_URI and JWT_SECRET in .env
+cp .env
 npm run dev
 ```
 
@@ -40,7 +39,7 @@ make sure MongoDB is running locally before starting.
 
 ## api
 
-all protected routes need `Authorization: Bearer <token>` in the header.
+all protected routes need Authorization: Bearer <token> in the header.
 
 ### auth
 
