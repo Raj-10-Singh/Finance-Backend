@@ -91,6 +91,67 @@ all roles can access these.
 
 ---
 
+
+## testing with postman
+
+download postman from [postman.com](https://postman.com) if you don't have it.
+
+**step 1 — register an admin**
+
+- method: `POST`  
+- url: `https://finance-backend-nnql.onrender.com/api/auth/register`  
+- body (raw → JSON):
+```json
+{
+  "name": "Raj",
+  "email": "raj@test.com",
+  "password": "raj123",
+  "role": "admin"
+}
+```
+
+**step 2 — login and copy the token**
+
+- method: `POST`  
+- url: `https://finance-backend-nnql.onrender.com/api/auth/login`  
+- body:
+```json
+{
+  "email": "raj@test.com",
+  "password": "raj123"
+}
+```
+
+response gives you a `token` — copy it, you'll need it for everything below.
+
+**step 3 — add token to requests**
+
+in postman go to the request → Auth tab → select Bearer Token → paste your token.
+
+**step 4 — create a transaction (admin only)**
+
+- method: `POST`  
+- url: `https://finance-backend-nnql.onrender.com/api/transactions`  
+- body:
+```json
+{
+  "amount": 50000,
+  "type": "income",
+  "category": "salary",
+  "date": "2024-06-01",
+  "notes": "june salary"
+}
+```
+
+**step 5 — test access control**
+
+register a viewer and try to create a transaction with that token — you should get:
+```json
+{ "message": "you don't have access to do this" }
+```
+
+---
+
 ## notes / assumptions
 
 - delete is soft — sets a `deleted` flag, record stays in db
