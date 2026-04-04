@@ -1,6 +1,6 @@
 # finance-api
 
-Backend for a role based finance dashboard. Built with Node.js, Express and MongoDB for backend screening assignment 
+Backend for a role-based finance dashboard. Built with Node.js, Express and MongoDB as part of a backend screening assignment.
 
 ---
 
@@ -13,14 +13,21 @@ Backend for a role based finance dashboard. Built with Node.js, Express and Mong
 
 ---
 
-## setup
+## local setup
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Raj-10-Singh/Finance-Backend.git
 cd finance-api
 npm install
-cp .env
+cp .env.example .env
 npm run dev
+```
+
+open `.env` and fill in your values:
+
+```
+MONGO_URI=mongodb://localhost:27017/finance_app
+JWT_SECRET=any_long_random_string
 ```
 
 make sure MongoDB is running locally before starting.
@@ -31,108 +38,112 @@ make sure MongoDB is running locally before starting.
 
 | role | what they can do |
 |------|-----------------|
-| viewer | view transactions and dashboard |
+| viewer | view transactions and dashboard only |
 | analyst | same as viewer |
-| admin | everything — create, edit, delete records, manage users |
+| admin | everything — create, update, delete records and manage users |
 
 ---
 
-## api
+## api routes
 
-all protected routes need Authorization: Bearer <token> in the header.
+all protected routes need `Authorization: Bearer <token>` in the header.
 
 ### auth
 
-| method | route | access | description |
+| method | route | access | what it does |
 |--------|-------|--------|-------------|
 | POST | /api/auth/register | public | create account |
-| POST | /api/auth/login | public | login, get token |
-| GET | /api/auth/me | auth | get your own profile |
-
-
+| POST | /api/auth/login | public | login, returns token |
+| GET | /api/auth/me | any | get your own profile |
 
 ### transactions
 
-| method | route | access | description |
+| method | route | access | what it does |
 |--------|-------|--------|-------------|
-| GET | /api/transactions | all | list transactions |
-| GET | /api/transactions/:id | all | get one |
-| POST | /api/transactions | admin | create |
-| PATCH | /api/transactions/:id | admin | update |
+| GET | /api/transactions | any | list transactions |
+| GET | /api/transactions/:id | any | get one transaction |
+| POST | /api/transactions | admin | create a transaction |
+| PATCH | /api/transactions/:id | admin | update a transaction |
 | DELETE | /api/transactions/:id | admin | soft delete |
 
+filtering via query params:
+
+```
+?type=income
+?category=food
+?startDate=2024-01-01&endDate=2024-06-30
+?page=1&limit=20
 ```
 
-valid types: `income`, `expense`  
-valid categories: `salary`, `freelance`, `food`, `rent`, `transport`, `utilities`, `health`, `other`
+valid types: `income`, `expense`
 
----
+valid categories: `salary`, `freelance`, `food`, `rent`, `transport`, `utilities`, `health`, `other`
 
 ### dashboard
 
 all roles can access these.
 
-| method | route | description |
-|--------|-------|-------------|
+| method | route | what it returns |
+|--------|-------|----------------|
 | GET | /api/dashboard/summary | total income, expenses, net balance |
-| GET | /api/dashboard/categories | totals by category |
-| GET | /api/dashboard/monthly | monthly breakdown (pass ?months=6) |
-| GET | /api/dashboard/recent | last N transactions (pass ?limit=10) |
-
----
+| GET | /api/dashboard/categories | breakdown by category |
+| GET | /api/dashboard/monthly | monthly trend — pass `?months=6` |
+| GET | /api/dashboard/recent | recent transactions — pass `?limit=10` |
 
 ### users (admin only)
 
-| method | route | description |
+| method | route | what it does |
 |--------|-------|-------------|
 | GET | /api/users | list all users |
-| PATCH | /api/users/:id/role | change role |
+| PATCH | /api/users/:id/role | change a user's role |
 | PATCH | /api/users/:id/status | set active or inactive |
 
 ---
 
-
 ## testing with postman
 
-download postman from [postman.com](https://postman.com) if you don't have it.
+download postman from [postman.com](https://postman.com) if you don't have it already.
 
 **step 1 — register an admin**
 
-- method: `POST`  
-- url: `https://finance-backend-nnql.onrender.com/api/auth/register`  
+- method: `POST`
+- url: `https://finance-backend-nnql.onrender.com/api/auth/register`
 - body (raw → JSON):
+
 ```json
 {
-  "name": "Raj",
-  "email": "raj@test.com",
-  "password": "raj123",
+  "name": "Raj Singh",
+  "email": "raj@finance.dev",
+  "password": "raj@1234",
   "role": "admin"
 }
 ```
 
 **step 2 — login and copy the token**
 
-- method: `POST`  
-- url: `https://finance-backend-nnql.onrender.com/api/auth/login`  
+- method: `POST`
+- url: `https://finance-backend-nnql.onrender.com/api/auth/login`
 - body:
+
 ```json
 {
-  "email": "raj@test.com",
-  "password": "raj123"
+  "email": "raj@finance.dev",
+  "password": "raj@1234"
 }
 ```
 
-response gives you a `token` — copy it, you'll need it for everything below.
+response gives back a `token` — copy it, you need it for all requests below.
 
 **step 3 — add token to requests**
 
-in postman go to the request → Auth tab → select Bearer Token → paste your token.
+in postman open the request → go to Auth tab → select Bearer Token → paste your token there.
 
 **step 4 — create a transaction (admin only)**
 
-- method: `POST`  
-- url: `https://finance-backend-nnql.onrender.com/api/transactions`  
+- method: `POST`
+- url: `https://finance-backend-nnql.onrender.com/api/transactions`
 - body:
+
 ```json
 {
   "amount": 50000,
@@ -145,22 +156,38 @@ in postman go to the request → Auth tab → select Bearer Token → paste your
 
 **step 5 — test access control**
 
-register a viewer and try to create a transaction with that token — you should get:
+register a viewer account and try to hit the create transaction route with that token. you should get back:
+
 ```json
 { "message": "you don't have access to do this" }
 ```
 
----
-
-## notes / assumptions
-
-- delete is soft — sets a `deleted` flag, record stays in db
-- analysts and viewers have the same read access for now, analyst role is there if you want to extend it later
-- no email verification, kept it simple
-- for production: swap MONGO_URI to Atlas, set a strong JWT_SECRET, done
+that confirms role-based access is working.
 
 ---
 
-## deployment
+## test accounts (live)
 
-hosted on Render. live URL: https://finance-backend-nnql.onrender.com
+already registered on the hosted API — use these directly:
+
+| role | email | password |
+|------|-------|----------|
+| admin | raj@finance.dev | raj@1234 |
+| analyst | analyst@finance.dev | analyst@1234 |
+| viewer | viewer@finance.dev | viewer@1234 |
+
+---
+
+## notes
+
+- delete is soft — sets a `deleted: true` flag, nothing is actually removed from the db
+- analyst and viewer have the same read access for now, kept it simple since the requirement said "may" for analyst
+- no email format validation, mongoose handles the duplicate check
+- didn't add input sanitization on the PATCH /transactions route — noted it but keeping scope tight
+
+---
+
+## live api
+
+`https://finance-backend-nnql.onrender.com`
+
