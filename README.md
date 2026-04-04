@@ -19,7 +19,7 @@ Backend for a role-based finance dashboard. Built with Node.js, Express and Mong
 git clone https://github.com/Raj-10-Singh/Finance-Backend.git
 cd finance-api
 npm install
-cp .env.example .env
+cp .env
 npm run dev
 ```
 
@@ -166,9 +166,9 @@ that confirms role-based access is working.
 
 ---
 
-## test accounts (live)
+## test accounts
 
-already registered on the hosted API — use these directly:
+already registered on the hosted API use these directly:
 
 | role | email | password |
 |------|-------|----------|
@@ -180,14 +180,14 @@ already registered on the hosted API — use these directly:
 
 ## notes
 
-- delete is soft — sets a `deleted: true` flag, nothing is actually removed from the db
-- analyst and viewer have the same read access for now, kept it simple since the requirement said "may" for analyst
+- delete is soft sets a deleted: true flag, nothing is actually removed from the db
+- analyst and viewer have the same read access for now, kept it simple since the requirement said may for analyst
 - no email format validation, mongoose handles the duplicate check
-- didn't add input sanitization on the PATCH /transactions route — noted it but keeping scope tight
+- didn't add input sanitization on the PATCH /transactions route noted it but keeping scope tight
 
 ---
 
 ## live api
 
-`https://finance-backend-nnql.onrender.com`
+https://finance-backend-nnql.onrender.com
 
