@@ -1,6 +1,6 @@
 # finance-api
 
-Backend for a role based finance dashboard. Built with Node.js, Express and MongoDB.
+Backend for a role based finance dashboard. Built with Node.js, Express and MongoDB for backend screening assignment 
 
 ---
 
@@ -49,19 +49,7 @@ all protected routes need Authorization: Bearer <token> in the header.
 | POST | /api/auth/login | public | login, get token |
 | GET | /api/auth/me | auth | get your own profile |
 
-register body:
-```json
-{
-  "name": "Rahul",
-  "email": "rahul@example.com",
-  "password": "password123",
-  "role": "analyst"
-}
-```
 
-login returns a `token` — use it as `Authorization: Bearer <token>` for all other requests.
-
----
 
 ### transactions
 
@@ -73,12 +61,6 @@ login returns a `token` — use it as `Authorization: Bearer <token>` for all ot
 | PATCH | /api/transactions/:id | admin | update |
 | DELETE | /api/transactions/:id | admin | soft delete |
 
-filtering (query params):
-```
-?type=income
-?category=food
-?startDate=2024-01-01&endDate=2024-06-30
-?page=1&limit=20
 ```
 
 valid types: `income`, `expense`  
@@ -120,4 +102,4 @@ all roles can access these.
 
 ## deployment
 
-hosted on Render. live URL: `<add after deploying>`
+hosted on Render. live URL: https://finance-backend-nnql.onrender.com
